@@ -35,4 +35,34 @@ class User extends Authenticatable
     {
         return $query->where('status', 'active');
     }
+
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class, 'submitted_by');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function blogRequests()
+    {
+        return $this->hasMany(BlogRequest::class, 'submitted_by');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(AppNotification::class, 'recipient_id');
+    }
 }
