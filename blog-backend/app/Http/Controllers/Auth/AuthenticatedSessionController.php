@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +25,16 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        $user = User::where('email', $request->email)->first();
+
+        if ($user && $user->status !== 'active') {
+            $message = $user->status === 'pending'
+                ? 'Your account is awaiting admin approval.'
+                : 'Your account has been banned.';
+
+            return back()->withErrors(['email' => $message])->withInput();
+        }
+
         $request->authenticate();
 
         $request->session()->regenerate();
