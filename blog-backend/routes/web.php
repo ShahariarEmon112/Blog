@@ -21,4 +21,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth', 'country:BD'])->group(function () {
+    Route::get('/dashboard/{section}', function (string $section) {
+        abort_unless(in_array($section, ['overview', 'blogs', 'users']), 404);
+        return "section: {$section}";
+    })->name('dashboard.section');
+
+    Route::redirect('/dashboard', '/dashboard/overview');
+});
+
 require __DIR__.'/auth.php';
