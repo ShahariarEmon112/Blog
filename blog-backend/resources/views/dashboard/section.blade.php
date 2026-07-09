@@ -34,4 +34,19 @@
     @elseif ($section === 'users')
         @include('dashboard.users-panel')
     @endif
+@push('scripts')
+<script>
+    (async () => {
+        const res = await fetch('{{ route("dashboard.latest") }}', { headers: { 'Accept': 'application/json' } });
+        if (res.ok) {
+            const { blogs } = await res.json();
+            const el = document.getElementById('recent-live');
+            if (el) el.innerHTML = blogs.map(b => `<li class="p-2 border-b">${b.title}</li>`).join('') || '<li>No blogs</li>';
+        }
+        const q = await fetch('/api/quote').then(r => r.json());
+        const qw = document.getElementById('quote-widget');
+        if (qw) qw.innerHTML = `&ldquo;${q.quote}&rdquo; &mdash; <em>${q.author}</em>`;
+    })();
+</script>
+@endpush
 @endsection
