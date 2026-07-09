@@ -1,15 +1,12 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
 
 Route::get('/pending-approval', function () {
     return view('auth.pending-approval');
@@ -22,12 +19,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'country:BD'])->group(function () {
-    Route::get('/dashboard/{section}', function (string $section) {
-        abort_unless(in_array($section, ['overview', 'blogs', 'users']), 404);
-        return "section: {$section}";
-    })->name('dashboard.section');
+    Route::get('/dashboard/{section}', [DashboardController::class, 'show'])
+        ->name('dashboard.section');
 
-    Route::redirect('/dashboard', '/dashboard/overview');
+    Route::redirect('/dashboard', '/dashboard/overview')->name('dashboard');
 });
 
 require __DIR__.'/auth.php';
