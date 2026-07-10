@@ -1,0 +1,46 @@
+{
+  "name": "blog-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@mantine/carousel": "^9.4.1",
+    "@mantine/core": "^9.4.1",
+    "@mantine/dates": "^9.4.1",
+    "@mantine/form": "^9.4.1",
+    "@mantine/hooks": "^9.4.1",
+    "@mantine/modals": "^9.4.1",
+    "@mantine/notifications": "^9.4.1",
+    "@tabler/icons-react": "^3.44.0",
+    "@tanstack/react-query": "^5.101.2",
+    "@tanstack/react-query-devtools": "^5.101.2",
+    "@tiptap/extension-image": "^3.27.3",
+    "@tiptap/extension-link": "^3.27.3",
+    "@tiptap/extension-placeholder": "^3.27.3",
+    "@tiptap/extension-underline": "^3.27.3",
+    "@tiptap/react": "^3.27.3",
+    "@tiptap/starter-kit": "^3.27.3",
+    "axios": "^1.18.1",
+    "dayjs": "^1.11.21",
+    "dompurify": "^3.4.11",
+    "lodash": "^4.18.1",
+    "next": "16.2.10",
+    "nextjs-toploader": "^3.9.17",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "sonner": "^2.0.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.10",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
+    "tailwindcss": "^4"
+  }
+}
