@@ -79,4 +79,24 @@ class AuthController extends Controller
             $request->user()->only(['id', 'name', 'email', 'is_super_user', 'avatar', 'status'])
         );
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name'   => 'sometimes|string|min:3|max:50',
+            'avatar' => 'sometimes|file|image|max:2048',
+            'author_details' => 'nullable|string|max:500',
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $validated['avatar'] = $path;
+        }
+
+        $user->update($validated);
+
+        return response()->json($user->only(['id', 'name', 'email', 'is_super_user', 'avatar', 'status']));
+    }
 }

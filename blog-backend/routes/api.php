@@ -11,6 +11,7 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::patch('/users/me', [AuthController::class, 'updateProfile']);
     Route::get('/blogs/mine', [BlogController::class, 'mine']);
 
     Route::post('/blog-requests', [\App\Http\Controllers\Api\BlogRequestController::class, 'store']);

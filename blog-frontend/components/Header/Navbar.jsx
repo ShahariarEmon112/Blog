@@ -1,15 +1,15 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Group, Button, Anchor, Burger, Drawer, Stack, Divider, Badge,
+  Group, Button, Anchor, Burger, Drawer, Stack, Divider, Menu,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconDashboard } from '@tabler/icons-react';
+import { IconDashboard, IconUser, IconBookmark, IconFileText, IconSend, IconBell } from '@tabler/icons-react';
 import useAuth from '@/hooks/useAuth';
 import ThemeToggle from './ThemeToggle';
+import NotificationBell from '@/components/NotificationBell/NotificationBell';
 
 const links = [
   { href: '/', label: 'Home' },
@@ -61,12 +61,23 @@ export default function Navbar() {
                   Admin
                 </Button>
               )}
-              <Button component={Link} href="/my-blogs" variant="subtle" size="sm">
-                My Blogs
-              </Button>
-              <Button variant="default" size="sm" onClick={logout}>
-                Logout
-              </Button>
+              <NotificationBell />
+              <Menu>
+                <Menu.Target>
+                  <Button variant="subtle" size="sm" leftSection={<IconUser size={16} />}>
+                    Account
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item component={Link} href="/profile" leftSection={<IconUser size={14} />}>Profile</Menu.Item>
+                  <Menu.Item component={Link} href="/my-blogs" leftSection={<IconFileText size={14} />}>My Blogs</Menu.Item>
+                  <Menu.Item component={Link} href="/my-requests" leftSection={<IconSend size={14} />}>My Requests</Menu.Item>
+                  <Menu.Item component={Link} href="/request-blog" leftSection={<IconFileText size={14} />}>Request Blog</Menu.Item>
+                  <Menu.Item component={Link} href="/favourites" leftSection={<IconBookmark size={14} />}>Favorites</Menu.Item>
+                  <Menu.Divider />
+                  <Menu.Item color="red" onClick={logout}>Logout</Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             </>
           ) : (
             <>
@@ -105,9 +116,11 @@ export default function Navbar() {
                   Admin
                 </Button>
               )}
-              <Button component={Link} href="/my-blogs" variant="subtle" fullWidth onClick={close}>
-                My Blogs
-              </Button>
+              <Button component={Link} href="/profile" variant="subtle" fullWidth onClick={close}>Profile</Button>
+              <Button component={Link} href="/my-blogs" variant="subtle" fullWidth onClick={close}>My Blogs</Button>
+              <Button component={Link} href="/my-requests" variant="subtle" fullWidth onClick={close}>My Requests</Button>
+              <Button component={Link} href="/request-blog" variant="subtle" fullWidth onClick={close}>Request Blog</Button>
+              <Button component={Link} href="/favourites" variant="subtle" fullWidth onClick={close}>Favorites</Button>
               <Button variant="default" fullWidth onClick={() => { logout(); close(); }}>
                 Logout
               </Button>
