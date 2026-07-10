@@ -27,7 +27,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/favorites/{blog}', [\App\Http\Controllers\Api\FavoriteController::class, 'store']);
     Route::delete('/favorites/{blog}', [\App\Http\Controllers\Api\FavoriteController::class, 'destroy']);
     Route::get('/favorites/check/{blog}', [\App\Http\Controllers\Api\FavoriteController::class, 'check']);
+
+    Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [\App\Http\Controllers\Api\NotificationController::class, 'unreadCount']);
+    Route::patch('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'read']);
+    Route::patch('/notifications/mark-all-read', [\App\Http\Controllers\Api\NotificationController::class, 'markAllRead']);
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\Api\NotificationController::class, 'destroy']);
 });
+
+Route::post('/contact', [\App\Http\Controllers\Api\ContactController::class, 'store']);
+Route::post('/newsletter', [\App\Http\Controllers\Api\NewsletterController::class, 'store']);
 
 Route::get('/favorites/count/{blog}', [\App\Http\Controllers\Api\FavoriteController::class, 'count']);
 
@@ -55,6 +64,13 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::apiResource('categories', \App\Http\Controllers\Api\CategoryController::class)->except('show');
     Route::get('/site-settings', [\App\Http\Controllers\Api\SiteSettingController::class, 'show']);
     Route::put('/site-settings', [\App\Http\Controllers\Api\SiteSettingController::class, 'update']);
+
+    Route::get('/contact', [\App\Http\Controllers\Api\ContactController::class, 'index']);
+    Route::patch('/contact/{id}/read', [\App\Http\Controllers\Api\ContactController::class, 'read']);
+    Route::delete('/contact/{id}', [\App\Http\Controllers\Api\ContactController::class, 'destroy']);
+
+    Route::get('/newsletter', [\App\Http\Controllers\Api\NewsletterController::class, 'index']);
+    Route::delete('/newsletter/{id}', [\App\Http\Controllers\Api\NewsletterController::class, 'destroy']);
 });
 
 Route::get('/quote', fn(QuoteService $s) => response()->json($s->quoteOfTheDay()));
