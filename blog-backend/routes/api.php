@@ -33,6 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'read']);
     Route::patch('/notifications/mark-all-read', [\App\Http\Controllers\Api\NotificationController::class, 'markAllRead']);
     Route::delete('/notifications/{id}', [\App\Http\Controllers\Api\NotificationController::class, 'destroy']);
+
+    Route::post('/comment-reports', [\App\Http\Controllers\Api\CommentReportController::class, 'store']);
 });
 
 Route::post('/contact', [\App\Http\Controllers\Api\ContactController::class, 'store']);
@@ -71,6 +73,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     Route::get('/newsletter', [\App\Http\Controllers\Api\NewsletterController::class, 'index']);
     Route::delete('/newsletter/{id}', [\App\Http\Controllers\Api\NewsletterController::class, 'destroy']);
+
+    Route::get('/comment-reports', [\App\Http\Controllers\Api\CommentReportController::class, 'index']);
+    Route::patch('/comment-reports/{id}/status', [\App\Http\Controllers\Api\CommentReportController::class, 'updateStatus']);
+    Route::delete('/comment-reports/{id}', [\App\Http\Controllers\Api\CommentReportController::class, 'destroy']);
+    Route::delete('/comment-reports/{id}/comment', [\App\Http\Controllers\Api\CommentReportController::class, 'deleteComment']);
 });
 
 Route::get('/quote', fn(QuoteService $s) => response()->json($s->quoteOfTheDay()));
