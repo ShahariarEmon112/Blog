@@ -15,7 +15,21 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/blog-requests', [\App\Http\Controllers\Api\BlogRequestController::class, 'store']);
     Route::get('/blog-requests/mine', [\App\Http\Controllers\Api\BlogRequestController::class, 'mine']);
+
+    Route::post('/blogs/{blog}/comments', [\App\Http\Controllers\Api\CommentController::class, 'store']);
+    Route::patch('/comments/{comment}', [\App\Http\Controllers\Api\CommentController::class, 'update']);
+    Route::delete('/comments/{comment}', [\App\Http\Controllers\Api\CommentController::class, 'destroy']);
+
+    Route::post('/blogs/{blog}/like', [\App\Http\Controllers\Api\LikeController::class, 'store']);
+    Route::delete('/blogs/{blog}/like', [\App\Http\Controllers\Api\LikeController::class, 'destroy']);
+
+    Route::get('/favorites', [\App\Http\Controllers\Api\FavoriteController::class, 'index']);
+    Route::post('/favorites/{blog}', [\App\Http\Controllers\Api\FavoriteController::class, 'store']);
+    Route::delete('/favorites/{blog}', [\App\Http\Controllers\Api\FavoriteController::class, 'destroy']);
+    Route::get('/favorites/check/{blog}', [\App\Http\Controllers\Api\FavoriteController::class, 'check']);
 });
+
+Route::get('/favorites/count/{blog}', [\App\Http\Controllers\Api\FavoriteController::class, 'count']);
 
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/featured', [BlogController::class, 'featured']);
