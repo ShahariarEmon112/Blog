@@ -12,6 +12,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::get('/blogs/mine', [BlogController::class, 'mine']);
+
+    Route::post('/blog-requests', [\App\Http\Controllers\Api\BlogRequestController::class, 'store']);
+    Route::get('/blog-requests/mine', [\App\Http\Controllers\Api\BlogRequestController::class, 'mine']);
 });
 
 Route::get('/blogs', [BlogController::class, 'index']);
@@ -26,6 +29,12 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/users/{user}/approve', [\App\Http\Controllers\Api\Admin\UserController::class, 'approve']);
     Route::patch('/users/{user}/ban', [\App\Http\Controllers\Api\Admin\UserController::class, 'ban']);
     Route::delete('/users/{user}', [\App\Http\Controllers\Api\Admin\UserController::class, 'destroy']);
+
+    Route::get('/blog-requests', [\App\Http\Controllers\Api\BlogRequestController::class, 'index']);
+    Route::post('/blog-requests/{id}/approve', [\App\Http\Controllers\Api\BlogRequestController::class, 'approve']);
+    Route::post('/blog-requests/{id}/reject', [\App\Http\Controllers\Api\BlogRequestController::class, 'reject']);
+    Route::put('/blog-requests/{id}', [\App\Http\Controllers\Api\BlogRequestController::class, 'update']);
+    Route::delete('/blog-requests/{id}', [\App\Http\Controllers\Api\BlogRequestController::class, 'destroy']);
 });
 
 Route::get('/quote', fn(QuoteService $s) => response()->json($s->quoteOfTheDay()));
