@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, use } from 'react';
+import { useState, use, useEffect } from 'react';
 import { Container, Title, TextInput, Select, FileInput, Switch, Button, Paper, Stack, Loader, Center, Text } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -26,22 +26,28 @@ export default function EditBlog({ params }) {
 
   const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: getCategories });
 
-  const { isLoading } = useQuery({
+  const { data: blogData, isLoading, error } = useQuery({
     queryKey: ['blog', id],
     queryFn: () => publicAxios.get(`/blogs/${id}`).then(r => r.data?.data || r.data),
     enabled: !loaded,
-    onSuccess: (blog) => {
-      setTitle(blog.title);
-      setCategoryId(String(blog.category_id));
-      setAuthorName(blog.author_name);
-      setAuthorDetails(blog.author_details || '');
-      setTimeRead(blog.time_read || '');
-      setContent(blog.content || '');
-      setIsFeatured(blog.is_featured);
-      setLoaded(true);
-    },
-    onError: () => toast.error('Failed to load blog'),
   });
+
+  useEffect(() => {
+    if (blogData && !loaded) {
+      setTitle(blogData.title);
+      setCategoryId(String(blogData.category_id));
+      setAuthorName(blogData.author_name);
+      setAuthorDetails(blogData.author_details || '');
+      setTimeRead(blogData.time_read || '');
+      setContent(blogData.content || '');
+      setIsFeatured(blogData.is_featured);
+      setLoaded(true);
+    }
+  }, [blogData, loaded]);
+
+  useEffect(() => {
+    if (error) toast.error('Failed to load blog');
+  }, [error]);
 
   const updateMut = useUpdateBlog();
 

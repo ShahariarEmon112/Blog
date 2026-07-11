@@ -2,7 +2,7 @@
 
 import { ActionIcon } from '@mantine/core';
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { addLike, removeLike } from '@/api/likes.mjs';
 import useAuth from '@/hooks/useAuth';
@@ -11,10 +11,7 @@ export default function LikeButton({ blogId, likesCount: initialCount }) {
   const { isLoggedIn } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: blog } = useQuery({
-    queryKey: ['blog', blogId],
-    enabled: false,
-  });
+  const blog = queryClient.getQueryData(['blog', blogId])?.data;
 
   const likeMut = useMutation({
     mutationFn: () => addLike(blogId),
