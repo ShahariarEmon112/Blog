@@ -52,6 +52,12 @@ Route::get('/blogs/{blog}', [BlogController::class, 'show']);
 Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index']);
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/blogs', [BlogController::class, 'adminIndex']);
+    Route::post('/blogs', [BlogController::class, 'adminStore']);
+    Route::put('/blogs/{blog}', [BlogController::class, 'adminUpdate']);
+    Route::delete('/blogs/{blog}', [BlogController::class, 'adminDestroy']);
+    Route::patch('/blogs/{blog}/featured', [BlogController::class, 'toggleFeatured']);
+
     Route::get('/users', [\App\Http\Controllers\Api\Admin\UserController::class, 'index']);
     Route::get('/users/pending', [\App\Http\Controllers\Api\Admin\UserController::class, 'pending']);
     Route::post('/users/{user}/approve', [\App\Http\Controllers\Api\Admin\UserController::class, 'approve']);

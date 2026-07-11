@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBlogRequest;
+use App\Http\Requests\UpdateBlogRequest;
 use App\Http\Resources\BlogResource;
 use App\Models\Blog;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -70,5 +73,70 @@ class BlogController extends Controller
                 ->latest()
                 ->get()
         );
+    }
+
+    public function adminIndex(Request $request)
+    {
+        $search = $request->search;
+
+        return BlogResource::collection(
+            Blog::with('category')
+                ->when($search, fn($q) => $q->where('title', 'like', "%{$search}%"))
+                ->latest()
+                ->paginate(50)
+        );
+    }
+
+    public function adminStore(StoreBlogRequest $request)
+    {
+        $data = $request->validated();
+
+        if ($request->hasFile('blog_pic')) {
+            $data['blog_pic_url'] = $request->file('blog_pic')->store('blogs', 'public');
+        }
+        if ($request->hasFile('author_avatar')) {
+            $data['author_avatar'] = $request->file('author_avatar')->store('avatars', 'public');
+        }
+
+        $data['submitted_by'] = $request->user()->id;
+
+        $blog = Blog::create($data);
+
+        return new BlogResource($blog);
+    }
+
+    public function adminUpdate(UpdateBlogRequest $request, Blog $blog)
+    {
+        $data = $request->validated();
+
+        if ($request->hasFile('blog_pic')) {
+            if ($blog->blog_pic_url) Storage::disk('public')->delete($blog->blog_pic_url);
+            $data['blog_pic_url'] = $request->file('blog_pic')->store('blogs', 'public');
+        }
+        if ($request->hasFile('author_avatar')) {
+            if ($blog->author_avatar) Storage::disk('public')->delete($blog->author_avatar);
+            $data['author_avatar'] = $request->file('author_avatar')->store('avatars', 'public');
+        }
+
+        $blog->update($data);
+
+        return new BlogResource($blog->fresh());
+    }
+
+    public function adminDestroy(Blog $blog)
+    {
+        if ($blog->blog_pic_url) Storage::disk('public')->delete($blog->blog_pic_url);
+        if ($blog->author_avatar) Storage::disk('public')->delete($blog->author_avatar);
+
+        $blog->delete();
+
+        return response()->noContent();
+    }
+
+    public function toggleFeatured(Blog $blog)
+    {
+        $blog->update(['is_featured' => !$blog->is_featured]);
+
+        return new BlogResource($blog->fresh());
     }
 }
