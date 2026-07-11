@@ -9,6 +9,8 @@ import useAuth from '@/hooks/useAuth';
 import compressImage from '@/utils/compressImage';
 import RequireAuth from '@/components/RequireAuth';
 
+const STORAGE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '/storage');
+
 function ProfileContent() {
   const { user, refetch } = useAuth();
   const qc = useQueryClient();
@@ -28,7 +30,6 @@ function ProfileContent() {
     },
     onSuccess: () => {
       refetch();
-      qc.invalidateQueries({ queryKey: ['authUser'] });
       toast.success('Profile updated');
     },
     onError: () => toast.error('Failed to update profile'),
@@ -39,7 +40,7 @@ function ProfileContent() {
       <Title order={2} mb="lg">Edit Profile</Title>
       <Paper withBorder p="lg" radius="md">
         <Group mb="md">
-          <Avatar src={user?.avatar ? `http://localhost:8000/storage/${user.avatar}` : null} size={80} radius="xl" />
+          <Avatar src={user?.avatar ? `${STORAGE_URL}/${user.avatar}` : null} size={80} radius="xl" />
         </Group>
         <TextInput label="Name" value={name} onChange={(e) => setName(e.target.value)} mb="sm" />
         <FileInput label="Avatar" accept="image/*" value={avatarFile} onChange={setAvatarFile} mb="lg" />

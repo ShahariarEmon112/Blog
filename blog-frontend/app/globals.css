@@ -12,6 +12,12 @@
   --font-mono: var(--font-geist-mono);
 }
 
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -19,8 +25,10 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+[data-mantine-color-scheme="light"] {
+  --background: #f8f9fa;
+  --foreground: #212529;
+  --mantine-color-body: #ffffff;
+  --mantine-color-text: #212529;
+  --mantine-color-dimmed: #495057;
 }

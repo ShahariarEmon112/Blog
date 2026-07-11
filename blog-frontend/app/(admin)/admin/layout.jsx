@@ -14,25 +14,29 @@ import useAuth from '@/hooks/useAuth';
 import { getPendingUsers } from '@/api/admin.mjs';
 
 function AdminGuard({ children }) {
-  const { token, isAdmin, isLoading, user, logout } = useAuth();
+  const { token, isAdmin, isLoading, hydrated, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
-    if (!isLoading && (!token || !isAdmin)) {
-      router.replace('/login');
-    }
-  }, [token, isAdmin, isLoading, router]);
-
-  if (isLoading)
-    return <Center h="100vh"><Loader size="lg" /></Center>;
-  if (!token || !isAdmin) return null;
 
   const { data: pendingData } = useQuery({
     queryKey: ['admin', 'pendingCount'],
     queryFn: getPendingUsers,
     refetchInterval: 30_000,
+    enabled: !!token && !!isAdmin,
   });
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (!token) {
+      router.replace('/login');
+    } else if (!isLoading && !isAdmin) {
+      router.replace('/login');
+    }
+  }, [hydrated, token, isAdmin, isLoading, router]);
+
+  if (!hydrated || (token && isLoading))
+    return <Center h="100vh"><Loader size="lg" /></Center>;
+  if (!token || !isAdmin) return null;
 
   const pendingCount = pendingData?.data?.length || pendingData?.length || 0;
 

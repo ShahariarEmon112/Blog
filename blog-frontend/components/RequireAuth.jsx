@@ -6,14 +6,15 @@ import { Loader, Center } from '@mantine/core';
 import useAuth from '@/hooks/useAuth';
 
 export default function RequireAuth({ children }) {
-  const { token, isLoading } = useAuth();
+  const { token, isLoading, hydrated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    if (!hydrated) return;
     if (!isLoading && !token) router.replace('/login');
-  }, [token, isLoading, router]);
+  }, [hydrated, token, isLoading, router]);
 
-  if (isLoading)
+  if (!hydrated || (token && isLoading))
     return <Center h={400}><Loader /></Center>;
   if (!token) return null;
 

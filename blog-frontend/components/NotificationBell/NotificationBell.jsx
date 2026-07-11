@@ -46,7 +46,7 @@ export default function NotificationBell() {
   return (
     <Popover opened={opened} onChange={setOpened} width={360} position="bottom-end">
       <Popover.Target>
-        <Indicator inline label={unread?.count || 0} size={16} disabled={!unread?.count}>
+          <Indicator inline label={unread?.unread_count || 0} size={16} disabled={!unread?.unread_count}>
           <ActionIcon variant="subtle" size="lg" onClick={() => setOpened((o) => !o)}>
             <IconBell size={20} />
           </ActionIcon>
@@ -72,10 +72,10 @@ export default function NotificationBell() {
                 style={(theme) => ({
                   borderRadius: 4,
                   cursor: 'pointer',
-                  background: n.read_at ? 'transparent' : theme.colors.blue[0],
+                  background: n.read ? 'transparent' : theme.colors.blue[0],
                   ':hover': { background: theme.colors.gray[0] },
                 })}
-                onClick={() => { if (!n.read_at) markReadMut.mutate(n.id); }}
+                onClick={() => { if (!n.read) markReadMut.mutate(n.id); }}
               >
                 <Group justify="space-between">
                   <div style={{ flex: 1 }}>

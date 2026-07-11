@@ -17,7 +17,7 @@ export default function useAuth() {
   const { data: user, isLoading, refetch } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => axiosPrivate.get('/auth/me').then(r => r.data),
-    enabled: hydrated && !!token && isLoggedIn,
+    enabled: !!token && isLoggedIn,
     staleTime: 5 * 60 * 1000,
     retry: false,
   });
@@ -32,6 +32,7 @@ export default function useAuth() {
   return {
     user,
     token,
+    hydrated,
     isLoggedIn: hydrated ? isLoggedIn : false,
     isLoading,
     isAdmin: !!user?.is_super_user,
