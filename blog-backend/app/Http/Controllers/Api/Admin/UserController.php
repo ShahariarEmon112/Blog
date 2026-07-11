@@ -11,8 +11,11 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = User::when($request->status, fn($q, $v) => $q->where('status', $v))
+            ->when($request->search, fn($q, $v) => $q->where(function ($q) use ($v) {
+                $q->where('name', 'like', "%{$v}%")->orWhere('email', 'like', "%{$v}%");
+            }))
             ->latest()
-            ->paginate(20);
+            ->paginate(min((int) $request->per_page ?: 20, 100));
 
         return response()->json($users);
     }
