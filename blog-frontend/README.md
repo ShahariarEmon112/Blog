@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Blog Platform — Frontend (Next.js 16)
 
-## Getting Started
+Full-stack blog platform frontend built with Next.js 16 (App Router), Mantine 9, Tailwind CSS, TanStack React Query, and TipTap.
 
-First, run the development server:
+---
+
+## Local Setup
+
+Requires Node 20+ and the Laravel backend running on `http://localhost:8000`.
 
 ```bash
+cd blog-frontend
+
+# 1. Install Node dependencies
+npm install
+
+# 2. Point at the local Laravel API
+cp .env.example .env.local
+# Ensure .env.local contains:
+#   NEXT_PUBLIC_API_URL=http://localhost:8000/api
+
+# 3. Dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Sign in on `http://localhost:3000/login` with the seeded admin credentials (`admin@blog.local` / `Admin@123`) to reach the admin panel.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Pages
 
-## Learn More
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page (hero, categories, featured & recent blogs) |
+| `/blogs` | Blog listing (search, filter, sort, pagination) |
+| `/blogs/{id}` | Blog detail (comments, likes, favorites, reports) |
+| `/login` | Login |
+| `/register` | Register |
+| `/profile` | Edit profile |
+| `/favourites` | My favorites |
+| `/my-blogs` | My approved blogs |
+| `/my-requests` | My blog requests |
+| `/request-blog` | Submit a blog request |
+| `/admin/*` | Admin panel (blog CRUD, users, categories, settings) |
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Framework:** Next.js 16 (App Router)
+- **UI:** Mantine 9 + Tailwind CSS
+- **Data:** TanStack React Query v5
+- **HTTP:** axios (public + private interceptors)
+- **Auth:** Sanctum personal access tokens (localStorage)
+- **Editor:** TipTap with StarterKit, Image, Link, Underline, Placeholder
+- **Notifications:** sonner toasts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

@@ -1,58 +1,88 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Blog Platform — Backend (Laravel 11)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Full-stack blog platform backend built with Laravel 11, MySQL 8, and Sanctum API tokens. Serves a JSON API for the Next.js frontend and includes a Blade-based admin dashboard.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Local Setup
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Requires PHP 8.2+, Composer 2, MySQL 8, Node 20+.
 
 ```bash
-composer require laravel/boost --dev
+cd blog-backend
 
-php artisan boost:install
+# 1. Install PHP dependencies
+composer install
+
+# 2. Copy env and generate the app key
+cp .env.example .env
+php artisan key:generate
+
+# 3. Create the database
+mysql -u root -e "CREATE DATABASE blog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# 4. Edit .env — set DB_DATABASE=blog and your DB_USERNAME / DB_PASSWORD
+#    Example:
+#      DB_CONNECTION=mysql
+#      DB_HOST=127.0.0.1
+#      DB_PORT=3306
+#      DB_DATABASE=blog
+#      DB_USERNAME=root
+#      DB_PASSWORD=
+
+# 5. Migrations + dummy data (one command)
+php artisan migrate:fresh --seed
+
+# 6. Publicly serve uploaded images
+php artisan storage:link
+
+# 7. Build Breeze's Blade CSS (only for the Blade admin dashboard)
+npm install && npm run build
+
+# 8. Serve
+php artisan serve
+# → http://localhost:8000
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+**Seeded admin credentials:** `admin@blog.local` / `Admin@123`
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## API Endpoints
 
-## Code of Conduct
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/auth/register` | Public | Register (status → pending) |
+| POST | `/api/auth/login` | Public | Login (rejects pending/banned) |
+| POST | `/api/auth/logout` | Sanctum | Logout |
+| GET | `/api/auth/me` | Sanctum | Current user |
+| PATCH | `/api/users/me` | Sanctum | Update profile |
+| GET | `/api/blogs` | Public | Blog list (search, filter, sort, paginate) |
+| GET | `/api/blogs/featured` | Public | Featured blogs |
+| GET | `/api/blogs/popular` | Public | Popular blogs |
+| GET | `/api/blogs/{id}` | Public | Blog detail |
+| GET | `/api/blogs/mine` | Sanctum | Current user's blogs |
+| GET | `/api/categories` | Public | All categories |
+| POST | `/api/contact` | Public | Contact form |
+| POST | `/api/newsletter` | Public | Newsletter subscribe |
+| GET | `/api/site-settings` | Public | Site settings |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+All admin endpoints are under `/api/admin/*` and require Sanctum + admin privileges.
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Database
+
+- `php artisan migrate:fresh --seed` populates all tables with sample data
+- Users: 1 admin + 10 active + 2 pending
+- Categories: 10
+- Blogs: 30 (5 featured, 5 popular)
+- Comments, notifications, site settings
+
+## Blade Dashboard
+
+The Blade dashboard at `/dashboard/{section}` demonstrates Laravel framework concepts: routes with parameters, Blade layouts/conditionals/loops, custom middleware with parameters, Guzzle API integration, AJAX widgets, CSRF protection, and resource controllers.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
