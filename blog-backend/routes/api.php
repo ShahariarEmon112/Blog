@@ -50,6 +50,7 @@ Route::get('/blogs/category/{slug}', [BlogController::class, 'byCategory']);
 Route::get('/blogs/{blog}', [BlogController::class, 'show']);
 
 Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index']);
+Route::get('/site-settings', [\App\Http\Controllers\Api\SiteSettingController::class, 'show']);
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/blogs', [BlogController::class, 'adminIndex']);
