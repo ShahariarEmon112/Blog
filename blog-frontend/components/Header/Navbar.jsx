@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
   Group, Button, Anchor, Burger, Drawer, Stack, Divider, Menu, Avatar, Text,
@@ -30,7 +31,8 @@ export default function Navbar() {
   return (
     <>
       <Group h="100%" px="md" justify="space-between" style={{ flexWrap: 'nowrap' }}>
-        <Anchor component={Link} href="/" fw={700} size="lg" c="cyan">
+        <Anchor component={Link} href="/" fw={700} size="lg" c="cyan" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Image src="/classroom_writes_logo.png" alt="ClassRoom Writes" width={52} height={52} style={{ borderRadius: 6 }} />
           ClassRoom Writes
         </Anchor>
 
@@ -74,7 +76,7 @@ export default function Navbar() {
                   <Menu.Item component={Link} href="/profile" leftSection={<IconUser size={14} />}>Profile</Menu.Item>
                   <Menu.Item component={Link} href="/my-blogs" leftSection={<IconFileText size={14} />}>My Blogs</Menu.Item>
                   <Menu.Item component={Link} href="/my-requests" leftSection={<IconSend size={14} />}>My Requests</Menu.Item>
-                  <Menu.Item component={Link} href="/request-blog" leftSection={<IconFileText size={14} />}>Request Blog</Menu.Item>
+                  {!isAdmin && <Menu.Item component={Link} href="/request-blog" leftSection={<IconFileText size={14} />}>Request Blog</Menu.Item>}
                   <Menu.Item component={Link} href="/favourites" leftSection={<IconBookmark size={14} />}>Favorites</Menu.Item>
                   <Menu.Divider />
                   <Menu.Item color="red" onClick={logout}>Logout</Menu.Item>
@@ -121,7 +123,7 @@ export default function Navbar() {
               <Button component={Link} href="/profile" variant="subtle" fullWidth onClick={close}>Profile</Button>
               <Button component={Link} href="/my-blogs" variant="subtle" fullWidth onClick={close}>My Blogs</Button>
               <Button component={Link} href="/my-requests" variant="subtle" fullWidth onClick={close}>My Requests</Button>
-              <Button component={Link} href="/request-blog" variant="subtle" fullWidth onClick={close}>Request Blog</Button>
+              {!isAdmin && <Button component={Link} href="/request-blog" variant="subtle" fullWidth onClick={close}>Request Blog</Button>}
               <Button component={Link} href="/favourites" variant="subtle" fullWidth onClick={close}>Favorites</Button>
               <Button variant="default" fullWidth onClick={() => { logout(); close(); }}>
                 Logout

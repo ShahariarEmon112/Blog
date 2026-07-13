@@ -17,7 +17,12 @@ export default function CustomizeAbout() {
       setAbout({
         name: settings.about_page.name || '',
         bio: settings.about_page.bio || '',
-        social_links: settings.about_page.social_links || { linkedin: '', twitter: '', facebook: '', email: '' },
+        social_links: {
+          linkedin: settings.about_page.social_links?.linkedin || '',
+          twitter: settings.about_page.social_links?.twitter || '',
+          facebook: settings.about_page.social_links?.facebook || '',
+          email: settings.about_page.social_links?.email || '',
+        },
       });
       setRoles(settings.about_page.roles || []);
     }

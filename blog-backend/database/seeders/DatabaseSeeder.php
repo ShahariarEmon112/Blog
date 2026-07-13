@@ -29,12 +29,12 @@ class DatabaseSeeder extends Seeder
         Blog::all()->each(fn ($b) => Comment::factory(rand(3, 6))->create(['blog_id' => $b->id]));
 
         SiteSetting::firstOrCreate([], [
-            'site_title'    => 'Blog Platform',
+            'site_title'    => 'ClassRoom Writes',
             'hero_title'    => 'Thoughts Meet Words',
             'hero_subtitle' => 'A space for student writers to share stories.',
             'footer_text'   => 'Built for young writers.',
             'social_links'  => ['twitter' => '', 'linkedin' => '', 'instagram' => ''],
-            'about_page'    => ['name' => 'Admin', 'bio' => 'Founder'],
+            'about_page'    => ['name' => 'MD. Shahariar Emon Saikat', 'bio' => 'Founder'],
             'contact_page'  => ['heading' => 'Contact Us'],
         ]);
     }

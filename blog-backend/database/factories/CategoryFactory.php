@@ -10,12 +10,23 @@ class CategoryFactory extends Factory
 {
     protected $model = Category::class;
 
+    private static array $names = [
+        'Technology', 'Science', 'Literature', 'History',
+        'Education', 'Health', 'Lifestyle', 'Travel',
+        'Business', 'Sports', 'Art', 'Music',
+        'Food', 'Fashion', 'Environment', 'Culture',
+        'Philosophy', 'Psychology', 'Politics', 'Photography',
+    ];
+
+    private static int $index = 0;
+
     public function definition(): array
     {
-        $name = fake()->unique()->words(2, true);
+        $name = static::$names[static::$index % count(static::$names)];
+        static::$index++;
 
         return [
-            'name'  => ucwords($name),
+            'name'  => $name,
             'slug'  => Str::slug($name),
             'image' => 'https://picsum.photos/seed/' . fake()->uuid . '/400/300',
         ];
