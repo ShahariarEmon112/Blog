@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Group, Button, Anchor, Burger, Drawer, Stack, Divider, Menu,
+  Group, Button, Anchor, Burger, Drawer, Stack, Divider, Menu, Avatar, Text,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconDashboard, IconUser, IconBookmark, IconFileText, IconSend, IconBell } from '@tabler/icons-react';
@@ -18,9 +18,11 @@ const links = [
   { href: '/contact', label: 'Contact' },
 ];
 
+const STORAGE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '/storage');
+
 export default function Navbar() {
   const pathname = usePathname();
-  const { isLoggedIn, isAdmin, logout } = useAuth();
+  const { user, isLoggedIn, isAdmin, logout } = useAuth();
   const [opened, { toggle, close }] = useDisclosure(false);
 
   const isActive = (href) => pathname === href;
@@ -29,7 +31,7 @@ export default function Navbar() {
     <>
       <Group h="100%" px="md" justify="space-between" style={{ flexWrap: 'nowrap' }}>
         <Anchor component={Link} href="/" fw={700} size="lg" c="cyan">
-          BlogPlatform
+          ClassRoom Writes
         </Anchor>
 
         <Group visibleFrom="sm" gap="sm">
@@ -64,8 +66,8 @@ export default function Navbar() {
               <NotificationBell />
               <Menu>
                 <Menu.Target>
-                  <Button variant="subtle" size="sm" leftSection={<IconUser size={16} />}>
-                    Account
+                  <Button variant="subtle" size="sm" leftSection={<Avatar src={user?.avatar ? `${STORAGE_URL}/${user.avatar}` : null} size={22} radius="xl" />}>
+                    {user?.name || 'Account'}
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Container, Title, TextInput, FileInput, Button, Group, Paper, Loader, Center, Avatar } from '@mantine/core';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { Container, Title, TextInput, NumberInput, FileInput, Button, Group, Paper, Stack, Loader, Center, Avatar, Text, Divider } from '@mantine/core';
+import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { updateProfile } from '@/api/users.mjs';
 import useAuth from '@/hooks/useAuth';
@@ -13,14 +13,28 @@ const STORAGE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/a
 
 function ProfileContent() {
   const { user, refetch } = useAuth();
-  const qc = useQueryClient();
-  const [name, setName] = useState(user?.name || '');
+  const [name, setName] = useState('');
+  const [age, setAge] = useState(null);
+  const [gmail, setGmail] = useState('');
+  const [educationStatus, setEducationStatus] = useState('');
   const [avatarFile, setAvatarFile] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setAge(user.age || null);
+      setGmail(user.gmail || '');
+      setEducationStatus(user.education_status || '');
+    }
+  }, [user]);
 
   const mut = useMutation({
     mutationFn: async () => {
       const fd = new FormData();
       fd.append('name', name);
+      fd.append('age', String(age || ''));
+      fd.append('gmail', gmail);
+      fd.append('education_status', educationStatus);
       fd.append('_method', 'PATCH');
       if (avatarFile) {
         const compressed = await compressImage(avatarFile);
@@ -35,16 +49,35 @@ function ProfileContent() {
     onError: () => toast.error('Failed to update profile'),
   });
 
+  if (!user) return <Center py="xl"><Loader /></Center>;
+
   return (
     <Container size="sm" py="xl">
-      <Title order={2} mb="lg">Edit Profile</Title>
-      <Paper withBorder p="lg" radius="md">
-        <Group mb="md">
-          <Avatar src={user?.avatar ? `${STORAGE_URL}/${user.avatar}` : null} size={80} radius="xl" />
+      <Title order={2} mb="lg">My Profile</Title>
+
+      <Paper withBorder p="lg" radius="md" mb="lg">
+        <Group gap="xl">
+          <Avatar src={user.avatar ? `${STORAGE_URL}/${user.avatar}` : null} size={100} radius="xl" />
+          <div>
+            <Text size="xl" fw={700}>{user.name}</Text>
+            <Text size="sm" c="dimmed">{user.email}</Text>
+            {user.age && <Text size="sm">Age: {user.age}</Text>}
+            {user.gmail && <Text size="sm">Gmail: {user.gmail}</Text>}
+            {user.education_status && <Text size="sm">Education: {user.education_status}</Text>}
+          </div>
         </Group>
-        <TextInput label="Name" value={name} onChange={(e) => setName(e.target.value)} mb="sm" />
-        <FileInput label="Avatar" accept="image/*" value={avatarFile} onChange={setAvatarFile} mb="lg" />
-        <Button onClick={() => mut.mutate()} loading={mut.isPending}>Save</Button>
+      </Paper>
+
+      <Title order={3} mb="md">Edit Profile</Title>
+      <Paper withBorder p="lg" radius="md">
+        <Stack gap="sm">
+          <TextInput label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+          <NumberInput label="Age" value={age} onChange={setAge} min={1} max={150} />
+          <TextInput label="Gmail" value={gmail} onChange={(e) => setGmail(e.target.value)} />
+          <TextInput label="Education Status" value={educationStatus} onChange={(e) => setEducationStatus(e.target.value)} placeholder="e.g. Undergraduate, Graduate, etc." />
+          <FileInput label="Avatar" accept="image/*" value={avatarFile} onChange={setAvatarFile} />
+          <Button onClick={() => mut.mutate()} loading={mut.isPending}>Save</Button>
+        </Stack>
       </Paper>
     </Container>
   );

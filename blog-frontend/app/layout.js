@@ -16,7 +16,7 @@ const theme = createTheme({
 });
 
 export const metadata = {
-  title: 'Blog Platform',
+  title: 'ClassRoom Writes',
   description: 'A platform for young writers',
 };
 

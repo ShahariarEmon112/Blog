@@ -15,7 +15,7 @@ export default function useAuth() {
   useEffect(() => setHydrated(true), []);
 
   const { data: user, isLoading, refetch } = useQuery({
-    queryKey: ['currentUser'],
+    queryKey: ['currentUser', token],
     queryFn: () => axiosPrivate.get('/auth/me').then(r => r.data),
     enabled: !!token && isLoggedIn,
     staleTime: 5 * 60 * 1000,

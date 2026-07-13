@@ -2,8 +2,8 @@ import axios from 'axios';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-export const publicAxios = axios.create({ baseURL: BASE_URL, headers: { 'Content-Type': 'application/json' } });
-export const axiosPrivate = axios.create({ baseURL: BASE_URL, headers: { 'Content-Type': 'application/json' } });
+export const publicAxios = axios.create({ baseURL: BASE_URL });
+export const axiosPrivate = axios.create({ baseURL: BASE_URL });
 
 axiosPrivate.interceptors.request.use((config) => {
   const token = JSON.parse(localStorage.getItem('token') || 'null');

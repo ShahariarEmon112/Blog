@@ -62,7 +62,7 @@ class AuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'user'  => $user->only(['id', 'name', 'email', 'is_super_user', 'avatar', 'status']),
+            'user'  => $user->only(['id', 'name', 'email', 'is_super_user', 'avatar', 'status', 'age', 'gmail', 'education_status']),
         ]);
     }
 
@@ -76,7 +76,7 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         return response()->json(
-            $request->user()->only(['id', 'name', 'email', 'is_super_user', 'avatar', 'status'])
+            $request->user()->only(['id', 'name', 'email', 'is_super_user', 'avatar', 'status', 'age', 'gmail', 'education_status'])
         );
     }
 
@@ -85,9 +85,12 @@ class AuthController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'name'   => 'sometimes|string|min:3|max:50',
-            'avatar' => 'sometimes|file|image|max:2048',
-            'author_details' => 'nullable|string|max:500',
+            'name'              => 'sometimes|string|min:3|max:50',
+            'avatar'            => 'sometimes|file|image|max:2048',
+            'author_details'    => 'nullable|string|max:500',
+            'age'               => 'nullable|integer|min:1|max:150',
+            'gmail'             => 'nullable|email|max:255',
+            'education_status'  => 'nullable|string|max:255',
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -97,6 +100,6 @@ class AuthController extends Controller
 
         $user->update($validated);
 
-        return response()->json($user->only(['id', 'name', 'email', 'is_super_user', 'avatar', 'status']));
+        return response()->json($user->only(['id', 'name', 'email', 'is_super_user', 'avatar', 'status', 'age', 'gmail', 'education_status']));
     }
 }
