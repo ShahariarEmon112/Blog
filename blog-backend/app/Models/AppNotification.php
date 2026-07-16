@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AppNotification extends Model
 {
-    protected $fillable = ['recipient_id', 'action_by_id', 'blog_id', 'comment_id', 'type', 'read'];
+    protected $fillable = ['recipient_id', 'action_by_id', 'blog_id', 'comment_id', 'friend_request_id', 'type', 'read'];
 
     protected function casts(): array
     {
@@ -33,5 +33,10 @@ class AppNotification extends Model
     public function comment()
     {
         return $this->belongsTo(Comment::class);
+    }
+
+    public function friendRequest()
+    {
+        return $this->belongsTo(FriendRequest::class);
     }
 }

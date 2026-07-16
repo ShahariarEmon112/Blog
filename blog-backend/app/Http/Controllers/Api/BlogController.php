@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBlogRequest;
 use App\Http\Requests\UpdateBlogRequest;
 use App\Http\Resources\BlogResource;
+use App\Models\AppNotification;
 use App\Models\Blog;
 use App\Models\Category;
+use App\Models\FriendRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -102,6 +104,8 @@ class BlogController extends Controller
 
         $blog = Blog::create($data);
 
+        $this->notifyFriends($blog);
+
         return new BlogResource($blog);
     }
 
@@ -138,5 +142,25 @@ class BlogController extends Controller
         $blog->update(['is_featured' => !$blog->is_featured]);
 
         return new BlogResource($blog->fresh());
+    }
+
+    private function notifyFriends(Blog $blog): void
+    {
+        $friendIds = collect();
+        FriendRequest::where(function ($q) use ($blog) {
+            $q->where('sender_id', $blog->submitted_by)
+              ->orWhere('receiver_id', $blog->submitted_by);
+        })->where('status', 'accepted')->each(function ($fr) use ($friendIds, $blog) {
+            $friendIds->push($fr->sender_id === $blog->submitted_by ? $fr->receiver_id : $fr->sender_id);
+        });
+
+        foreach ($friendIds->unique() as $fid) {
+            AppNotification::create([
+                'recipient_id' => $fid,
+                'action_by_id' => $blog->submitted_by,
+                'blog_id'      => $blog->id,
+                'type'         => 'blog_posted',
+            ]);
+        }
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AppNotification;
 use App\Models\Blog;
 use App\Models\BlogRequest;
+use App\Models\FriendRequest;
 use Illuminate\Http\Request;
 
 class BlogRequestController extends Controller
@@ -75,6 +76,22 @@ class BlogRequestController extends Controller
             'blog_id'       => $blog->id,
             'type'          => 'request_approved',
         ]);
+
+        $friendIds = collect();
+        FriendRequest::where(function ($q) use ($blog) {
+            $q->where('sender_id', $blog->submitted_by)
+              ->orWhere('receiver_id', $blog->submitted_by);
+        })->where('status', 'accepted')->each(function ($fr) use ($friendIds, $blog) {
+            $friendIds->push($fr->sender_id === $blog->submitted_by ? $fr->receiver_id : $fr->sender_id);
+        });
+        foreach ($friendIds->unique() as $fid) {
+            AppNotification::create([
+                'recipient_id' => $fid,
+                'action_by_id' => $blog->submitted_by,
+                'blog_id'      => $blog->id,
+                'type'         => 'blog_posted',
+            ]);
+        }
 
         return response()->json(['blog_id' => $blog->id, 'message' => 'Blog request approved.']);
     }

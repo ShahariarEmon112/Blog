@@ -37,5 +37,7 @@ class DatabaseSeeder extends Seeder
             'about_page'    => ['name' => 'MD. Shahariar Emon Saikat', 'bio' => 'Founder'],
             'contact_page'  => ['heading' => 'Contact Us'],
         ]);
+
+        $this->call(FriendConnectionSeeder::class);
     }
 }
