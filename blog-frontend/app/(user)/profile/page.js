@@ -8,8 +8,7 @@ import { updateProfile } from '@/api/users.mjs';
 import useAuth from '@/hooks/useAuth';
 import compressImage from '@/utils/compressImage';
 import RequireAuth from '@/components/RequireAuth';
-
-const STORAGE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '/storage');
+import { getAvatarUrl } from '@/utils/avatar';
 
 function ProfileContent() {
   const { user, refetch } = useAuth();
@@ -57,7 +56,7 @@ function ProfileContent() {
 
       <Paper withBorder p="lg" radius="md" mb="lg">
         <Group gap="xl">
-          <Avatar src={user.avatar ? `${STORAGE_URL}/${user.avatar}` : null} size={100} radius="xl" />
+          <Avatar src={getAvatarUrl(user?.avatar)} size={100} radius="xl" />
           <div>
             <Text size="xl" fw={700}>{user.name}</Text>
             <Text size="sm" c="dimmed">{user.email}</Text>

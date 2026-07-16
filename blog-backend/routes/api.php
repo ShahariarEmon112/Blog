@@ -36,6 +36,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/notifications/{id}', [\App\Http\Controllers\Api\NotificationController::class, 'destroy']);
 
     Route::post('/comment-reports', [\App\Http\Controllers\Api\CommentReportController::class, 'store']);
+
+    Route::post('/friend-requests', [\App\Http\Controllers\Api\FriendRequestController::class, 'send']);
+    Route::patch('/friend-requests/{friendRequest}/accept', [\App\Http\Controllers\Api\FriendRequestController::class, 'accept']);
+    Route::patch('/friend-requests/{friendRequest}/reject', [\App\Http\Controllers\Api\FriendRequestController::class, 'reject']);
+    Route::get('/friend-requests/incoming', [\App\Http\Controllers\Api\FriendRequestController::class, 'incoming']);
+    Route::get('/friend-requests/outgoing', [\App\Http\Controllers\Api\FriendRequestController::class, 'outgoing']);
+    Route::get('/friends', [\App\Http\Controllers\Api\FriendRequestController::class, 'friends']);
+    Route::get('/users/all', [\App\Http\Controllers\Api\FriendRequestController::class, 'users']);
+    Route::delete('/friends/{user}', [\App\Http\Controllers\Api\FriendRequestController::class, 'remove']);
 });
 
 Route::post('/contact', [\App\Http\Controllers\Api\ContactController::class, 'store']);

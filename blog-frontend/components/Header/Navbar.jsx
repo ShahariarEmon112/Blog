@@ -7,10 +7,11 @@ import {
   Group, Button, Anchor, Burger, Drawer, Stack, Divider, Menu, Avatar, Text,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconDashboard, IconUser, IconBookmark, IconFileText, IconSend, IconBell } from '@tabler/icons-react';
+import { IconDashboard, IconUser, IconBookmark, IconFileText, IconSend, IconBell, IconUsers } from '@tabler/icons-react';
 import useAuth from '@/hooks/useAuth';
 import ThemeToggle from './ThemeToggle';
 import NotificationBell from '@/components/NotificationBell/NotificationBell';
+import { getAvatarUrl } from '@/utils/avatar';
 
 const links = [
   { href: '/', label: 'Home' },
@@ -18,8 +19,6 @@ const links = [
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
-
-const STORAGE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '/storage');
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -68,7 +67,7 @@ export default function Navbar() {
               <NotificationBell />
               <Menu>
                 <Menu.Target>
-                  <Button variant="subtle" size="sm" leftSection={<Avatar src={user?.avatar ? `${STORAGE_URL}/${user.avatar}` : null} size={22} radius="xl" />}>
+                  <Button variant="subtle" size="sm" leftSection={<Avatar src={getAvatarUrl(user?.avatar)} size={22} radius="xl" />}>
                     {user?.name || 'Account'}
                   </Button>
                 </Menu.Target>
@@ -76,6 +75,7 @@ export default function Navbar() {
                   <Menu.Item component={Link} href="/profile" leftSection={<IconUser size={14} />}>Profile</Menu.Item>
                   <Menu.Item component={Link} href="/my-blogs" leftSection={<IconFileText size={14} />}>My Blogs</Menu.Item>
                   {!isAdmin && <Menu.Item component={Link} href="/request-blog" leftSection={<IconFileText size={14} />}>Request Blog</Menu.Item>}
+                  <Menu.Item component={Link} href="/friends" leftSection={<IconUsers size={14} />}>Friends</Menu.Item>
                   <Menu.Item component={Link} href="/favourites" leftSection={<IconBookmark size={14} />}>Favorites</Menu.Item>
                   <Menu.Divider />
                   <Menu.Item color="red" onClick={logout}>Logout</Menu.Item>
@@ -122,6 +122,7 @@ export default function Navbar() {
               <Button component={Link} href="/profile" variant="subtle" fullWidth onClick={close}>Profile</Button>
               <Button component={Link} href="/my-blogs" variant="subtle" fullWidth onClick={close}>My Blogs</Button>
               {!isAdmin && <Button component={Link} href="/request-blog" variant="subtle" fullWidth onClick={close}>Request Blog</Button>}
+              <Button component={Link} href="/friends" variant="subtle" fullWidth onClick={close}>Friends</Button>
               <Button component={Link} href="/favourites" variant="subtle" fullWidth onClick={close}>Favorites</Button>
               <Button variant="default" fullWidth onClick={() => { logout(); close(); }}>
                 Logout

@@ -57,6 +57,24 @@ class User extends Authenticatable
         return $this->hasMany(Favorite::class);
     }
 
+    public function sentRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'sender_id');
+    }
+
+    public function receivedRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'receiver_id');
+    }
+
+    public function friends()
+    {
+        $sent = $this->sentRequests()->where('status', 'accepted')->pluck('receiver_id');
+        $received = $this->receivedRequests()->where('status', 'accepted')->pluck('sender_id');
+        $ids = $sent->merge($received)->unique();
+        return User::whereIn('id', $ids);
+    }
+
     public function blogRequests()
     {
         return $this->hasMany(BlogRequest::class, 'submitted_by');

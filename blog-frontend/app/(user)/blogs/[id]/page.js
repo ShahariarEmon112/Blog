@@ -107,6 +107,7 @@ export default function BlogDetailPage({ params }) {
   const { id } = use(params);
   const { isLoggedIn, user } = useAuth();
   const [commentText, setCommentText] = useState('');
+  const [anonymous, setAnonymous] = useState(false);
   const addCommentMut = useAddComment(id);
 
   const { data, isLoading } = useQuery({
@@ -121,8 +122,9 @@ export default function BlogDetailPage({ params }) {
 
   const handleComment = async () => {
     if (!commentText.trim()) return;
-    await addCommentMut.mutateAsync({ text: commentText.trim() });
+    await addCommentMut.mutateAsync({ text: commentText.trim(), is_anonymous: anonymous });
     setCommentText('');
+    setAnonymous(false);
   };
 
   return (
@@ -167,7 +169,15 @@ export default function BlogDetailPage({ params }) {
             onChange={(e) => setCommentText(e.target.value)}
             minRows={3}
           />
-          <Button onClick={handleComment} loading={addCommentMut.isPending}>Post Comment</Button>
+          <Group justify="space-between">
+            <Checkbox
+              label="Post as Anonymous"
+              checked={anonymous}
+              onChange={(e) => setAnonymous(e.currentTarget.checked)}
+              size="sm"
+            />
+            <Button onClick={handleComment} loading={addCommentMut.isPending}>Post Comment</Button>
+          </Group>
         </Stack>
       )}
 
