@@ -3,13 +3,15 @@
 import { Container, Title, SimpleGrid, Card, Text, Badge, Group, Image, Center, Loader } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { publicAxios } from '@/utilities/axios';
+import { axiosPrivate } from '@/utilities/axios';
+import useAuth from '@/hooks/useAuth';
 import RequireAuth from '@/components/RequireAuth';
 
 function MyBlogsContent() {
+  const { token } = useAuth();
   const { data, isLoading } = useQuery({
-    queryKey: ['blogs', 'mine'],
-    queryFn: () => publicAxios.get('/blogs/mine').then(r => r.data),
+    queryKey: ['blogs', 'mine', token],
+    queryFn: () => axiosPrivate.get('/blogs/mine').then(r => r.data),
   });
 
   const blogs = data?.data || [];

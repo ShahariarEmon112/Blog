@@ -75,7 +75,6 @@ export default function Navbar() {
                 <Menu.Dropdown>
                   <Menu.Item component={Link} href="/profile" leftSection={<IconUser size={14} />}>Profile</Menu.Item>
                   <Menu.Item component={Link} href="/my-blogs" leftSection={<IconFileText size={14} />}>My Blogs</Menu.Item>
-                  <Menu.Item component={Link} href="/my-requests" leftSection={<IconSend size={14} />}>My Requests</Menu.Item>
                   {!isAdmin && <Menu.Item component={Link} href="/request-blog" leftSection={<IconFileText size={14} />}>Request Blog</Menu.Item>}
                   <Menu.Item component={Link} href="/favourites" leftSection={<IconBookmark size={14} />}>Favorites</Menu.Item>
                   <Menu.Divider />
@@ -122,7 +121,6 @@ export default function Navbar() {
               )}
               <Button component={Link} href="/profile" variant="subtle" fullWidth onClick={close}>Profile</Button>
               <Button component={Link} href="/my-blogs" variant="subtle" fullWidth onClick={close}>My Blogs</Button>
-              <Button component={Link} href="/my-requests" variant="subtle" fullWidth onClick={close}>My Requests</Button>
               {!isAdmin && <Button component={Link} href="/request-blog" variant="subtle" fullWidth onClick={close}>Request Blog</Button>}
               <Button component={Link} href="/favourites" variant="subtle" fullWidth onClick={close}>Favorites</Button>
               <Button variant="default" fullWidth onClick={() => { logout(); close(); }}>

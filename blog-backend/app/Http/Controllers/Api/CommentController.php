@@ -13,15 +13,17 @@ class CommentController extends Controller
     public function store(Request $request, Blog $blog)
     {
         $validated = $request->validate([
-            'text'      => 'required|string|max:10000',
-            'parent_id' => 'nullable|exists:comments,id',
+            'text'         => 'required|string|max:10000',
+            'parent_id'    => 'nullable|exists:comments,id',
+            'is_anonymous' => 'boolean',
         ]);
 
         $comment = Comment::create([
-            'text'      => $validated['text'],
-            'user_id'   => $request->user()->id,
-            'blog_id'   => $blog->id,
-            'parent_id' => $validated['parent_id'] ?? null,
+            'text'         => $validated['text'],
+            'user_id'      => $request->user()->id,
+            'blog_id'      => $blog->id,
+            'parent_id'    => $validated['parent_id'] ?? null,
+            'is_anonymous' => $validated['is_anonymous'] ?? false,
         ]);
 
         // Notify blog owner (skip if actor is owner)
@@ -51,7 +53,15 @@ class CommentController extends Controller
 
         $comment->load('user');
 
-        return response()->json($comment, 201);
+        return response()->json([
+            'id'           => $comment->id,
+            'text'         => $comment->text,
+            'user_name'    => $comment->is_anonymous ? 'Anonymous' : $comment->user?->name,
+            'user_id'      => $comment->user_id,
+            'parent_id'    => $comment->parent_id,
+            'is_anonymous' => $comment->is_anonymous,
+            'created_at'   => $comment->created_at->diffForHumans(),
+        ], 201);
     }
 
     public function update(Request $request, Comment $comment)

@@ -1,6 +1,7 @@
 'use client';
 
-import { Container, Title, Table, Badge, Button, Group, Text } from '@mantine/core';
+import { useState } from 'react';
+import { Container, Title, Table, Badge, Button, Group, Text, Modal, Stack, Paper } from '@mantine/core';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { axiosPrivate } from '@/utilities/axios';
@@ -10,6 +11,7 @@ const reasonColor = { spam: 'red', harassment: 'orange', inappropriate: 'yellow'
 
 export default function CommentReports() {
   const qc = useQueryClient();
+  const [selected, setSelected] = useState(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'comment-reports'],
@@ -64,7 +66,16 @@ export default function CommentReports() {
               <Table.Td>
                 <Badge color={reasonColor[r.reason]} size="sm">{r.reason}</Badge>
               </Table.Td>
-              <Table.Td><Text lineClamp={1} maw={200}>{r.comment?.text || '—'}</Text></Table.Td>
+              <Table.Td>
+                <Text
+                  lineClamp={1}
+                  maw={200}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => setSelected(r)}
+                >
+                  {r.comment?.text || '—'}
+                </Text>
+              </Table.Td>
               <Table.Td><Badge color={statusColor[r.status]}>{r.status}</Badge></Table.Td>
               <Table.Td>
                 <Group gap="xs">
@@ -84,6 +95,25 @@ export default function CommentReports() {
           ))}
         </Table.Tbody>
       </Table>
+
+      <Modal opened={!!selected} onClose={() => setSelected(null)} title="Comment Details" size="lg">
+        {selected && (
+          <Stack gap="sm">
+            <Text><strong>Reported By:</strong> {selected.reporter?.name || '—'}</Text>
+            <Text><strong>Reason:</strong> <Badge color={reasonColor[selected.reason]} size="sm">{selected.reason}</Badge></Text>
+            <Text><strong>Status:</strong> <Badge color={statusColor[selected.status]}>{selected.status}</Badge></Text>
+            {selected.description && <Text><strong>Description:</strong> {selected.description}</Text>}
+            <Text><strong>Comment:</strong></Text>
+            <Paper withBorder p="sm" radius="md" bg="var(--mantine-color-gray-0)">
+              <Text style={{ whiteSpace: 'pre-wrap' }}>{selected.comment?.text || '—'}</Text>
+            </Paper>
+            <Text size="sm" c="dimmed">
+              Comment by: {selected.comment?.user?.name || 'Unknown'} |
+              Blog ID: {selected.comment?.blog_id || '—'}
+            </Text>
+          </Stack>
+        )}
+      </Modal>
     </Container>
   );
 }

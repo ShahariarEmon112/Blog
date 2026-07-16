@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, use } from 'react';
-import { Container, Title, Text, Image, Badge, Group, Stack, Paper, Textarea, Button, ActionIcon, Menu, Loader, Center, Divider } from '@mantine/core';
+import { Container, Title, Text, Image, Badge, Group, Stack, Paper, Textarea, Button, ActionIcon, Menu, Loader, Center, Divider, Checkbox } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { IconDots, IconFlag, IconEdit, IconTrash, IconMessageCircle } from '@tabler/icons-react';
 import { toast } from 'sonner';

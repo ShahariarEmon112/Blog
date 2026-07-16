@@ -35,17 +35,21 @@ class BlogResource extends JsonResource
             ]),
             'comments'    => $this->whenLoaded('comments', function () {
                 return $this->comments->map(fn($c) => [
-                    'id'        => $c->id,
-                    'text'      => $c->text,
-                    'user'      => $c->user ? ['id' => $c->user->id, 'name' => $c->user->name, 'avatar' => $c->user->avatar] : null,
-                    'parent_id' => $c->parent_id,
-                    'created_at' => $c->created_at->diffForHumans(),
-                    'replies'   => $c->relationLoaded('replies') ? $c->replies->map(fn($r) => [
-                        'id'         => $r->id,
-                        'text'       => $r->text,
-                        'user'       => $r->user ? ['id' => $r->user->id, 'name' => $r->user->name, 'avatar' => $r->user->avatar] : null,
-                        'parent_id'  => $r->parent_id,
-                        'created_at' => $r->created_at->diffForHumans(),
+                    'id'           => $c->id,
+                    'text'         => $c->text,
+                    'user_name'    => $c->is_anonymous ? 'Anonymous' : ($c->user?->name ?? 'Anonymous'),
+                    'user_id'      => $c->user_id,
+                    'parent_id'    => $c->parent_id,
+                    'is_anonymous' => $c->is_anonymous,
+                    'created_at'   => $c->created_at->diffForHumans(),
+                    'replies'      => $c->relationLoaded('replies') ? $c->replies->map(fn($r) => [
+                        'id'           => $r->id,
+                        'text'         => $r->text,
+                        'user_name'    => $r->is_anonymous ? 'Anonymous' : ($r->user?->name ?? 'Anonymous'),
+                        'user_id'      => $r->user_id,
+                        'parent_id'    => $r->parent_id,
+                        'is_anonymous' => $r->is_anonymous,
+                        'created_at'   => $r->created_at->diffForHumans(),
                     ]) : [],
                 ]);
             }),
