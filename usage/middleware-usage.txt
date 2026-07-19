@@ -1,0 +1,162 @@
+================================================================================
+                    MIDDLEWARE USAGE — ClassRoom Writes
+================================================================================
+
+There are 5 custom middleware classes + several Laravel built-in middleware.
+
+All custom middleware is registered in bootstrap/app.php with aliases.
+Three of them are also applied globally to all API routes via the 'api'
+middleware group.
+
+
+1. CUSTOM MIDDLEWARE FILES
+================================================================================
+
+  A) IsSuperUser — app/Http/Middleware/IsSuperUser.php
+  ────────────────────────────────────────────────────────────────────────────
+  What it does:
+    Checks if authenticated user has is_super_user = true.
+    Aborts 403 if not.
+
+  Applied to:
+    /api/admin/* routes (together with auth:sanctum) — api.php line 89
+
+  Alias: 'admin'
+
+
+  B) EnsureCountry — app/Http/Middleware/EnsureCountry.php
+  ────────────────────────────────────────────────────────────────────────────
+  What it does:
+    Reads X-Country header, ?country= query param, or falls back to 'BD'.
+    Aborts 403 if the detected country doesn't match the required country.
+    Accepts a parameter: country:BD, country:US, etc.
+
+  Applied to:
+    /dashboard/{section} routes (Blade side) — web.php line 24
+
+  Usage:
+    Route::middleware(['auth', 'country:BD'])->group(...)
+
+  Alias: 'country'
+
+
+  C) ForceJsonResponse — app/Http/Middleware/ForceJsonResponse.php
+  ────────────────────────────────────────────────────────────────────────────
+  What it does:
+    Sets Accept: application/json header on every incoming request.
+    This prevents Laravel from returning HTML error pages on API routes.
+    Without this, validation errors or 403s might return Blade error pages.
+
+  Applied to:
+    All API routes (via api middleware group) — bootstrap/app.php
+
+  Why needed:
+    The exception handler (bootstrap/app.php lines 22-24) checks is('api/*')
+    to decide JSON vs HTML, but some errors happen before routing.
+    This middleware ensures clean JSON even in edge cases.
+
+
+  D) SetLocale — app/Http/Middleware/SetLocale.php
+  ────────────────────────────────────────────────────────────────────────────
+  What it does:
+    Reads Accept-Language header from the request.
+    If the value is a supported locale (en, bn, ar, es, fr), sets
+    app()->setLocale() to that value.
+    All translation strings and date formatting will use that locale.
+
+  Applied to:
+    All API routes (via api middleware group) — bootstrap/app.php
+
+  Note:
+    Currently no translation files exist, but the middleware is ready.
+    To add translations, create resources/lang/{locale}/messages.php.
+
+
+  E) LogRequestDuration — app/Http/Middleware/LogRequestDuration.php
+  ────────────────────────────────────────────────────────────────────────────
+  What it does:
+    Records microtime(true) before the request passes through.
+    After the response is generated, calculates the difference in ms.
+    Logs the method, path, and duration to Laravel's log file.
+
+  Applied to:
+    All API routes (via api middleware group) — bootstrap/app.php
+
+  Output in storage/logs/laravel.log:
+    [2026-07-20 12:34:56] local.INFO: Request completed
+    {"method":"GET","path":"api/blogs","duration":"45.32ms"}
+
+
+2. LARAVEL BUILT-IN MIDDLEWARE
+================================================================================
+
+  auth:sanctum
+    Applied in api.php: lines 27, 89
+    Checks for a valid Sanctum token in the Authorization header.
+    Uses the 'sanctum' guard from config/auth.php.
+
+  auth (web session)
+    Applied in web.php: lines 16, 24
+    Applied in auth.php: line 19
+    Checks for a valid session-based login (Breeze Blade side).
+
+  guest
+    Applied in auth.php: line 7
+    Redirects already-logged-in users away from login/register pages.
+    Redirect target is /dashboard (Breeze default).
+
+  throttle
+    Built into Laravel, not explicitly applied in routes.
+    Handled by LoginRequest.php for rate-limiting login attempts.
+
+
+3. SUMMARY TABLE
+================================================================================
+
+  Middleware           | Type    | Applied To                     | File
+  ─────────────────────┼─────────┼────────────────────────────────┼─────────
+  auth:sanctum         | built-in| /api/* (all protected routes)  | api.php
+  auth (web)           | built-in| /profile, /blogs, /dashboard   | web.php
+                        |         | /logout                        | auth.php
+  guest                | built-in| /login, /register              | auth.php
+  admin (IsSuperUser)  | custom  | /api/admin/*                   | api.php
+  country (EnsureCtry) | custom  | /dashboard/{section}           | web.php
+  force.json           | custom  | All API routes (group)         | app.php
+  set.locale           | custom  | All API routes (group)         | app.php
+  log.duration         | custom  | All API routes (group)         | app.php
+
+
+4. HOW MIDDLEWARE WORKS IN THIS PROJECT
+================================================================================
+
+  Request lifecycle for an API call like GET /api/admin/users:
+
+    Request
+      │
+      ▼
+    ForceJsonResponse     → sets Accept: application/json
+      │
+      ▼
+    SetLocale             → reads Accept-Language, sets app locale
+      │
+      ▼
+    LogRequestDuration    → records start time
+      │
+      ▼
+    auth:sanctum          → validates Bearer token
+      │
+      ▼
+    admin (IsSuperUser)   → checks is_super_user flag
+      │
+      ▼
+    UserController@index  → actual logic
+      │
+      ▼
+    LogRequestDuration    → logs method, path, + duration
+      │
+      ▼
+    JSON Response
+
+================================================================================
+END OF MIDDLEWARE USAGE
+================================================================================
