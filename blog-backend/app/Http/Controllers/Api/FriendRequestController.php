@@ -16,6 +16,7 @@ class FriendRequestController extends Controller
             'receiver_id' => 'required|exists:users,id|different:sender_id',
         ]);
 
+        // check both directions - maybe they already sent us one
         $existing = FriendRequest::where(function ($q) use ($request, $validated) {
             $q->where('sender_id', $request->user()->id)
               ->where('receiver_id', $validated['receiver_id']);
@@ -96,6 +97,7 @@ class FriendRequestController extends Controller
         );
     }
 
+    // friendship is bidirectional - merge sent + received accepted requests
     public function friends(Request $request)
     {
         $sent = FriendRequest::with('receiver')

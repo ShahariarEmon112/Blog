@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Container, Title, Table, Badge, Button, Group, Text, Modal, Stack, Paper } from '@mantine/core';
+import { Container, Title, Table, Badge, Button, Group, Text, Modal, Stack, Paper, useMantineColorScheme } from '@mantine/core';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { axiosPrivate } from '@/utilities/axios';
@@ -10,6 +10,7 @@ const statusColor = { pending: 'yellow', reviewed: 'green', dismissed: 'gray' };
 const reasonColor = { spam: 'red', harassment: 'orange', inappropriate: 'yellow', misinformation: 'blue', other: 'gray' };
 
 export default function CommentReports() {
+  const { colorScheme } = useMantineColorScheme();
   const qc = useQueryClient();
   const [selected, setSelected] = useState(null);
 
@@ -99,15 +100,24 @@ export default function CommentReports() {
       <Modal opened={!!selected} onClose={() => setSelected(null)} title="Comment Details" size="lg">
         {selected && (
           <Stack gap="sm">
-            <Text><strong>Reported By:</strong> {selected.reporter?.name || '—'}</Text>
-            <Text><strong>Reason:</strong> <Badge color={reasonColor[selected.reason]} size="sm">{selected.reason}</Badge></Text>
-            <Text><strong>Status:</strong> <Badge color={statusColor[selected.status]}>{selected.status}</Badge></Text>
-            {selected.description && <Text><strong>Description:</strong> {selected.description}</Text>}
-            <Text><strong>Comment:</strong></Text>
-            <Paper withBorder p="sm" radius="md" bg="var(--mantine-color-gray-0)">
-              <Text style={{ whiteSpace: 'pre-wrap' }}>{selected.comment?.text || '—'}</Text>
+            <Paper withBorder p="sm" radius="md" bg={colorScheme === 'dark' ? 'dark.5' : 'blue.0'}>
+              <Group gap="xs" mb="xs">
+                <Text size="sm"><strong>Reported By:</strong> {selected.reporter?.name || '—'}</Text>
+                <Badge color={reasonColor[selected.reason]} size="sm">{selected.reason}</Badge>
+                <Badge color={statusColor[selected.status]} size="sm">{selected.status}</Badge>
+              </Group>
+              {selected.description && (
+                <Text size="sm" c="dimmed" mb="xs">
+                  <strong>Reporter note:</strong> {selected.description}
+                </Text>
+              )}
             </Paper>
-            <Text size="sm" c="dimmed">
+
+            <Text fw={600} size="sm">Comment</Text>
+            <Paper withBorder p="md" radius="md" bg={colorScheme === 'dark' ? 'dark.6' : 'gray.0'}>
+              <Text style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{selected.comment?.text || '—'}</Text>
+            </Paper>
+            <Text size="xs" c="dimmed">
               Comment by: {selected.comment?.user?.name || 'Unknown'} |
               Blog ID: {selected.comment?.blog_id || '—'}
             </Text>

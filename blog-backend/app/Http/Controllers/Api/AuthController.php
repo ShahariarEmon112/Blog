@@ -18,6 +18,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+        // new accounts start as pending - admin must approve
         User::create([
             'name'     => $validated['name'],
             'email'    => $validated['email'],
@@ -34,18 +35,21 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email'    => 'required|email',
+            'login'    => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        // let users login with either email or user id
+        $field = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'id';
+        $user  = User::where($field, $request->login)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'login' => ['The provided credentials are incorrect.'],
             ]);
         }
 
+        // don't let pending accounts in (teacher's requirement)
         if ($user->status === 'pending') {
             return response()->json([
                 'message' => 'Your account is awaiting admin approval.',
@@ -93,6 +97,7 @@ class AuthController extends Controller
             'education_status'  => 'nullable|string|max:255',
         ]);
 
+        // avatar gets stored in storage/app/public/avatars
         if ($request->hasFile('avatar')) {
             $path = $request->file('avatar')->store('avatars', 'public');
             $validated['avatar'] = $path;

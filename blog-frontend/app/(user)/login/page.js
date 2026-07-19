@@ -19,9 +19,9 @@ export default function LoginPage() {
   const [, setIsLoggedIn] = useLocalStorage({ key: 'isLoggedIn', defaultValue: false });
 
   const form = useForm({
-    initialValues: { email: '', password: '' },
+    initialValues: { login: '', password: '' },
     validate: {
-      email: (v) => (/^\S+@\S+$/.test(v) ? null : 'Invalid email'),
+      login: (v) => (v.trim().length > 0 ? null : 'Email or User ID is required'),
       password: (v) => (v.length >= 1 ? null : 'Password is required'),
     },
   });
@@ -29,6 +29,8 @@ export default function LoginPage() {
   const handleSubmit = async (values) => {
     setLoading(true);
     setError(null);
+    // clear any stale cached data from the previous session
+    window.dispatchEvent(new Event('clear-query-cache'));
     try {
       const res = await loginUser(values);
       setToken(res.token);
@@ -59,10 +61,10 @@ export default function LoginPage() {
 
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <TextInput
-            label="Email"
-            placeholder="you@example.com"
+            label="Email or User ID"
+            placeholder="you@example.com or 1"
             required
-            {...form.getInputProps('email')}
+            {...form.getInputProps('login')}
           />
           <PasswordInput
             label="Password"

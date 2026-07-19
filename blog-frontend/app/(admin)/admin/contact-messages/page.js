@@ -1,16 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { Container, Title, Table, Badge, Button, Group, Text, Pagination, Modal, Stack } from '@mantine/core';
+import { Container, Title, Table, Badge, Button, Group, Text, Pagination, Modal, Stack, Textarea, Divider } from '@mantine/core';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { IconSend } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { axiosPrivate } from '@/utilities/axios';
 import { useMantineColorScheme } from '@mantine/core';
+import { replyContact } from '@/api/messages.mjs';
 
 export default function ContactMessages() {
   const { colorScheme } = useMantineColorScheme();
   const qc = useQueryClient();
   const [selected, setSelected] = useState(null);
+  const [replyText, setReplyText] = useState('');
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'contact'],
@@ -36,6 +39,16 @@ export default function ContactMessages() {
     },
   });
 
+  const replyMut = useMutation({
+    mutationFn: () => replyContact(selected.id, replyText),
+    onSuccess: () => {
+      toast.success('Reply sent');
+      setReplyText('');
+      qc.invalidateQueries({ queryKey: ['admin', 'contact'] });
+    },
+    onError: () => toast.error('Failed to send reply'),
+  });
+
   return (
     <Container size="lg" py="xl">
       <Title order={2} mb="lg">Contact Messages</Title>
@@ -58,17 +71,15 @@ export default function ContactMessages() {
               <Table.Td>{msg.email}</Table.Td>
               <Table.Td><Text lineClamp={1} maw={150}>{msg.subject}</Text></Table.Td>
               <Table.Td>
-                <Text
-                  lineClamp={2}
-                  maw={250}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => setSelected(msg)}
-                >
+                <Text lineClamp={2} maw={250} style={{ cursor: 'pointer' }} onClick={() => { setSelected(msg); setReplyText(''); }}>
                   {msg.message}
                 </Text>
               </Table.Td>
               <Table.Td>
-                <Badge color={msg.is_read ? 'gray' : 'blue'}>{msg.is_read ? 'Read' : 'Unread'}</Badge>
+                <Group gap="xs">
+                  <Badge color={msg.is_read ? 'gray' : 'blue'}>{msg.is_read ? 'Read' : 'Unread'}</Badge>
+                  {msg.replied && <Badge color="teal" variant="light">Replied</Badge>}
+                </Group>
               </Table.Td>
               <Table.Td>
                 <Group gap="xs">
@@ -86,14 +97,55 @@ export default function ContactMessages() {
       <Modal opened={!!selected} onClose={() => setSelected(null)} title="Message Details" size="lg">
         {selected && (
           <Stack gap="sm">
+            <Group gap="xs">
+              <Badge color={selected.is_read ? 'gray' : 'blue'}>{selected.is_read ? 'Read' : 'Unread'}</Badge>
+              {selected.replied && <Badge color="teal">Replied</Badge>}
+              {selected.user && <Badge color="cyan" variant="light">Registered: {selected.user.name}</Badge>}
+            </Group>
             <Text><strong>Name:</strong> {selected.name}</Text>
             <Text><strong>Email:</strong> {selected.email}</Text>
             <Text><strong>Subject:</strong> {selected.subject}</Text>
             <Text><strong>Message:</strong></Text>
-            <Text style={{ whiteSpace: 'pre-wrap' }}>{selected.message}</Text>
+            <Text style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{selected.message}</Text>
+
+            {!selected.replied && selected.user_id && (
+              <>
+                <Divider label="Send Reply" labelPosition="center" />
+                <Textarea
+                  placeholder="Write your reply..."
+                  minRows={4}
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                />
+                <Button
+                  leftSection={<IconSend size={16} />}
+                  onClick={() => replyMut.mutate()}
+                  loading={replyMut.isPending}
+                  disabled={!replyText.trim()}
+                >
+                  Send Reply
+                </Button>
+              </>
+            )}
+
+            {selected.replied && (
+              <Text size="sm" c="dimmed" mt="sm">A reply has already been sent for this message.</Text>
+            )}
+
+            {!selected.user_id && (
+              <Text size="sm" c="dimmed" mt="sm">
+                This contact was submitted by a guest (no account). Replies can only be sent to registered users.
+              </Text>
+            )}
           </Stack>
         )}
       </Modal>
+
+      {totalPages > 1 && (
+        <Group justify="center" mt="xl">
+          <Pagination total={totalPages} value={1} />
+        </Group>
+      )}
     </Container>
   );
 }

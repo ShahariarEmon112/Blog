@@ -2,7 +2,9 @@ import axios from 'axios';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+// no auth headers - for blogs, categories, site-settings, contact, etc
 export const publicAxios = axios.create({ baseURL: BASE_URL });
+// automatically injects the sanctum token from localStorage
 export const axiosPrivate = axios.create({ baseURL: BASE_URL });
 
 axiosPrivate.interceptors.request.use((config) => {
@@ -11,12 +13,13 @@ axiosPrivate.interceptors.request.use((config) => {
   return config;
 });
 
+// if the server rejects our token, log out immediately
+// only 401 triggers auto-logout - 403 is handled per-component
 axiosPrivate.interceptors.response.use(
   r => r,
   (error) => {
     const status = error?.response?.status;
-    const message = error?.response?.data?.message;
-    if (status === 401 || status === 403) {
+    if (status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('isLoggedIn');
       window.location.href = '/login';

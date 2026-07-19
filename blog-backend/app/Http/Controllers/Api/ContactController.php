@@ -18,14 +18,17 @@ class ContactController extends Controller
             'message' => 'required|string',
         ]);
 
-        $contact = Contact::create($validated + ['is_read' => false]);
+        $contact = Contact::create($validated + [
+            'is_read' => false,
+            'user_id' => $request->user()?->id,
+        ]);
 
         return response()->json($contact, 201);
     }
 
     public function index()
     {
-        return response()->json(Contact::latest()->paginate(20));
+        return response()->json(Contact::with('user:id,name')->latest()->paginate(20));
     }
 
     public function read(int $id)

@@ -1,7 +1,7 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export function QueryProvider({ children }) {
   const [client] = useState(() => new QueryClient({
@@ -13,6 +13,12 @@ export function QueryProvider({ children }) {
       },
     },
   }));
+
+  useEffect(() => {
+    const handler = () => client.clear();
+    window.addEventListener('clear-query-cache', handler);
+    return () => window.removeEventListener('clear-query-cache', handler);
+  }, [client]);
 
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }

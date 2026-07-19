@@ -17,6 +17,7 @@ export default function FavoriteButton({ blogId }) {
     enabled: isLoggedIn,
   });
 
+  // update the local check state immediately + refresh the full favorites list
   const addMut = useMutation({
     mutationFn: () => addFavorite(blogId),
     onSuccess: () => {

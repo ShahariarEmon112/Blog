@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Container, Title, Table, TextInput, Group, Button, Badge, ActionIcon, Text } from '@mantine/core';
+import { Container, Title, Table, TextInput, Group, Button, Badge, ActionIcon, Text, Anchor } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { IconEdit, IconTrash, IconStar, IconStarFilled } from '@tabler/icons-react';
@@ -47,7 +47,11 @@ export default function AllBlogs() {
         <Table.Tbody>
           {blogs.map((blog) => (
             <Table.Tr key={blog.id}>
-              <Table.Td><Text lineClamp={1} maw={250}>{blog.title}</Text></Table.Td>
+              <Table.Td>
+                <Anchor component={Link} href={`/blogs/${blog.id}`} lineClamp={1} maw={250} target="_blank">
+                  {blog.title}
+                </Anchor>
+              </Table.Td>
               <Table.Td>{blog.category?.name || '—'}</Table.Td>
               <Table.Td>{blog.author_name}</Table.Td>
               <Table.Td>

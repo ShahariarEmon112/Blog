@@ -7,7 +7,7 @@ import {
   Group, Button, Anchor, Burger, Drawer, Stack, Divider, Menu, Avatar, Text,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconDashboard, IconUser, IconBookmark, IconFileText, IconSend, IconBell, IconUsers } from '@tabler/icons-react';
+import { IconDashboard, IconUser, IconBookmark, IconFileText, IconSend, IconBell, IconUsers, IconMail } from '@tabler/icons-react';
 import useAuth from '@/hooks/useAuth';
 import ThemeToggle from './ThemeToggle';
 import NotificationBell from '@/components/NotificationBell/NotificationBell';
@@ -75,6 +75,7 @@ export default function Navbar() {
                   <Menu.Item component={Link} href="/profile" leftSection={<IconUser size={14} />}>Profile</Menu.Item>
                   <Menu.Item component={Link} href="/my-blogs" leftSection={<IconFileText size={14} />}>My Blogs</Menu.Item>
                   {!isAdmin && <Menu.Item component={Link} href="/request-blog" leftSection={<IconFileText size={14} />}>Request Blog</Menu.Item>}
+                  <Menu.Item component={Link} href="/messages" leftSection={<IconMail size={14} />}>Messages</Menu.Item>
                   <Menu.Item component={Link} href="/friends" leftSection={<IconUsers size={14} />}>Friends</Menu.Item>
                   <Menu.Item component={Link} href="/favourites" leftSection={<IconBookmark size={14} />}>Favorites</Menu.Item>
                   <Menu.Divider />
@@ -122,6 +123,7 @@ export default function Navbar() {
               <Button component={Link} href="/profile" variant="subtle" fullWidth onClick={close}>Profile</Button>
               <Button component={Link} href="/my-blogs" variant="subtle" fullWidth onClick={close}>My Blogs</Button>
               {!isAdmin && <Button component={Link} href="/request-blog" variant="subtle" fullWidth onClick={close}>Request Blog</Button>}
+              <Button component={Link} href="/messages" variant="subtle" fullWidth onClick={close}>Messages</Button>
               <Button component={Link} href="/friends" variant="subtle" fullWidth onClick={close}>Friends</Button>
               <Button component={Link} href="/favourites" variant="subtle" fullWidth onClick={close}>Favorites</Button>
               <Button variant="default" fullWidth onClick={() => { logout(); close(); }}>

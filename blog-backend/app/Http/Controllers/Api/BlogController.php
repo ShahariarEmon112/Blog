@@ -23,6 +23,7 @@ class BlogController extends Controller
         $search  = $request->search;
         $category = $request->category;
 
+        // search works on title only, category filter accepts slug or id
         $blogs = Blog::with('category')
             ->when($search, fn($q) => $q->where('title', 'like', "%{$search}%"))
             ->when($category, function ($q) use ($category) {
@@ -144,6 +145,7 @@ class BlogController extends Controller
         return new BlogResource($blog->fresh());
     }
 
+    // when admin publishes a blog, notify all friends of the author
     private function notifyFriends(Blog $blog): void
     {
         $friendIds = collect();

@@ -13,6 +13,8 @@ export default function LikeButton({ blogId, likesCount: initialCount }) {
 
   const blog = queryClient.getQueryData(['blog', blogId])?.data;
 
+  // optimistically increment count so the UI feels instant
+  // rollback to previous state if the server call fails
   const likeMut = useMutation({
     mutationFn: () => addLike(blogId),
     onMutate: async () => {

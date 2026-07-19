@@ -37,7 +37,7 @@ class CommentController extends Controller
             ]);
         }
 
-        // Notify parent comment author if this is a reply
+        // if this is a reply to another comment, notify that comment's author too
         if ($comment->parent_id) {
             $parent = Comment::find($comment->parent_id);
             if ($parent && $parent->user_id !== $request->user()->id) {

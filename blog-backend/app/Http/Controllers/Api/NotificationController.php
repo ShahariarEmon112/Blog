@@ -23,6 +23,8 @@ class NotificationController extends Controller
                 'action_by'      => $n->actionBy ? ['id' => $n->actionBy->id, 'name' => $n->actionBy->name, 'avatar' => $n->actionBy->avatar] : null,
                 'blog'           => $n->blog ? ['id' => $n->blog->id, 'title' => $n->blog->title] : null,
                 'friend_request' => $n->friendRequest ? ['id' => $n->friendRequest->id, 'status' => $n->friendRequest->status] : null,
+                // build human-readable message per notification type
+                // types come from the enum in app_notifications table
                 'message'        => match ($n->type) {
                     'like'             => ($n->actionBy->name ?? 'Someone') . ' liked your blog "' . ($n->blog->title ?? '') . '"',
                     'comment'          => ($n->actionBy->name ?? 'Someone') . ' commented on your blog "' . ($n->blog->title ?? '') . '"',

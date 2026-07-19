@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Container, Title, Table, Badge, Button, Group, Text, Modal, Textarea, Stack, Paper } from '@mantine/core';
+import { Container, Title, Table, Badge, Button, Group, Text, Modal, Textarea, Stack, Paper, useMantineColorScheme } from '@mantine/core';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { axiosPrivate } from '@/utilities/axios';
@@ -9,6 +9,7 @@ import { axiosPrivate } from '@/utilities/axios';
 const statusColor = { pending: 'yellow', approved: 'green', rejected: 'red' };
 
 export default function BlogRequests() {
+  const { colorScheme } = useMantineColorScheme();
   const qc = useQueryClient();
   const [preview, setPreview] = useState(null);
   const [rejectId, setRejectId] = useState(null);
@@ -64,7 +65,11 @@ export default function BlogRequests() {
         <Table.Tbody>
           {requests.map((req) => (
             <Table.Tr key={req.id}>
-              <Table.Td><Text lineClamp={1} maw={200}>{req.title}</Text></Table.Td>
+              <Table.Td>
+                <Text lineClamp={1} maw={200} style={{ cursor: 'pointer', textDecoration: 'underline', textDecorationColor: 'var(--mantine-color-dimmed)' }} onClick={() => setPreview(req)}>
+                  {req.title}
+                </Text>
+              </Table.Td>
               <Table.Td>{req.user?.name || '—'}</Table.Td>
               <Table.Td><Badge color={statusColor[req.status]}>{req.status}</Badge></Table.Td>
               <Table.Td>
@@ -86,8 +91,28 @@ export default function BlogRequests() {
 
       <Modal opened={!!preview} onClose={() => setPreview(null)} title={preview?.title} size="lg">
         <Stack gap="sm">
-          <Text size="sm" c="dimmed">By {preview?.user?.name} — {preview?.category?.name || 'Uncategorized'}</Text>
-          <Text size="sm" component="div" dangerouslySetInnerHTML={{ __html: preview?.content || '' }} />
+          <Paper withBorder p="sm" radius="md" bg={colorScheme === 'dark' ? 'dark.5' : 'blue.0'}>
+            <Text size="sm">
+              <strong>By</strong> {preview?.user?.name || '—'} &middot;{' '}
+              <strong>Category:</strong> {preview?.category?.name || 'Uncategorized'} &middot;{' '}
+              <Badge color={statusColor[preview?.status]} size="sm">{preview?.status}</Badge>
+            </Text>
+          </Paper>
+
+          <Text fw={600} size="sm">Content</Text>
+          <Paper
+            withBorder
+            p="lg"
+            radius="md"
+            bg={colorScheme === 'dark' ? 'dark.6' : 'gray.0'}
+            style={{ lineHeight: 1.8 }}
+          >
+            <Text
+              component="div"
+              dangerouslySetInnerHTML={{ __html: preview?.content || '' }}
+              style={{ lineHeight: 1.8 }}
+            />
+          </Paper>
         </Stack>
       </Modal>
 

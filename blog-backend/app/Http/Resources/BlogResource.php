@@ -23,16 +23,16 @@ class BlogResource extends JsonResource
             'likes_count' => $this->likes_count,
             'publish_date' => $this->publish_date?->toDateString(),
             'created_at'  => $this->created_at?->toISOString(),
-            'category'    => $this->whenLoaded('category', fn() => [
+            'category'    => $this->relationLoaded('category') && $this->category ? [
                 'id'   => $this->category->id,
                 'name' => $this->category->name,
                 'slug' => $this->category->slug,
-            ]),
-            'author'      => $this->whenLoaded('author', fn() => [
+            ] : null,
+            'author'      => $this->relationLoaded('author') && $this->author ? [
                 'id'     => $this->author->id,
                 'name'   => $this->author->name,
                 'avatar' => $this->author->avatar,
-            ]),
+            ] : null,
             'comments'    => $this->whenLoaded('comments', function () {
                 return $this->comments->map(fn($c) => [
                     'id'           => $c->id,

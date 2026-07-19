@@ -24,6 +24,7 @@ export default function useAuth() {
 
   const logout = useCallback(async () => {
     try { await axiosPrivate.post('/auth/logout'); } catch {}
+    window.dispatchEvent(new Event('clear-query-cache'));
     setToken(null);
     setIsLoggedIn(false);
     router.push('/');
