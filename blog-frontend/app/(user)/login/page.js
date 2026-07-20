@@ -37,7 +37,8 @@ export default function LoginPage() {
       setIsLoggedIn(true);
       router.push(res.user?.is_super_user ? '/admin' : '/');
     } catch (err) {
-      const message = err?.response?.data?.message || 'Invalid email or password';
+      const message = err?.response?.data?.message
+        || (err?.request ? 'Unable to reach server' : 'Invalid email or password');
       setError(message);
     } finally {
       setLoading(false);

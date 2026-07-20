@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('app_notifications', function (Blueprint $table) {
-            $table->foreign('friend_request_id')->references('id')->on('friend_requests')->cascadeOnDelete();
+            $table->foreignId('friend_request_id')->nullable()->constrained('friend_requests')->cascadeOnDelete();
         });
         DB::statement("ALTER TABLE app_notifications MODIFY COLUMN type ENUM('like','comment','favorite','request_approved','welcome','blog_posted','friend_request','friend_accepted') NOT NULL DEFAULT 'like'");
     }

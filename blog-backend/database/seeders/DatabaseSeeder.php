@@ -38,6 +38,15 @@ class DatabaseSeeder extends Seeder
             'contact_page'  => ['heading' => 'Contact Us'],
         ]);
 
-        $this->call(FriendConnectionSeeder::class);
+        $this->call([
+            StudentUsersSeeder::class,
+            MoreUsersSeeder::class,
+            FriendConnectionSeeder::class,
+            DemoDataSeeder::class,
+            TestMessagesSeeder::class,
+            CategorizeBlogsSeeder::class,
+            AvatarSeeder::class,
+            EnrichDemoSeeder::class,
+        ]);
     }
 }
