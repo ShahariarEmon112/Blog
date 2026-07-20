@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useLocalStorage } from '@mantine/hooks';
+import { useSessionStorage } from '@mantine/hooks';
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { axiosPrivate } from '@/utilities/axios';
@@ -9,8 +9,8 @@ import { axiosPrivate } from '@/utilities/axios';
 export default function useAuth() {
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
-  const [token, setToken] = useLocalStorage({ key: 'token', defaultValue: null });
-  const [isLoggedIn, setIsLoggedIn] = useLocalStorage({ key: 'isLoggedIn', defaultValue: false });
+  const [token, setToken] = useSessionStorage({ key: 'token', defaultValue: null });
+  const [isLoggedIn, setIsLoggedIn] = useSessionStorage({ key: 'isLoggedIn', defaultValue: false });
 
   useEffect(() => setHydrated(true), []);
 

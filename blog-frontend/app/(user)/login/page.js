@@ -8,15 +8,15 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconAlertCircle } from '@tabler/icons-react';
-import { useLocalStorage } from '@mantine/hooks';
+import { useSessionStorage } from '@mantine/hooks';
 import { loginUser } from '@/api/auth.mjs';
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [, setToken] = useLocalStorage({ key: 'token', defaultValue: null });
-  const [, setIsLoggedIn] = useLocalStorage({ key: 'isLoggedIn', defaultValue: false });
+  const [, setToken] = useSessionStorage({ key: 'token', defaultValue: null });
+  const [, setIsLoggedIn] = useSessionStorage({ key: 'isLoggedIn', defaultValue: false });
 
   const form = useForm({
     initialValues: { login: '', password: '' },

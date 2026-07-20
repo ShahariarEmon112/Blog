@@ -4,11 +4,11 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 // no auth headers - for blogs, categories, site-settings, contact, etc
 export const publicAxios = axios.create({ baseURL: BASE_URL });
-// automatically injects the sanctum token from localStorage
+// automatically injects the sanctum token from sessionStorage (per-tab)
 export const axiosPrivate = axios.create({ baseURL: BASE_URL });
 
 axiosPrivate.interceptors.request.use((config) => {
-  const token = JSON.parse(localStorage.getItem('token') || 'null');
+  const token = JSON.parse(sessionStorage.getItem('token') || 'null');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -20,8 +20,8 @@ axiosPrivate.interceptors.response.use(
   (error) => {
     const status = error?.response?.status;
     if (status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('isLoggedIn');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('isLoggedIn');
       window.location.href = '/login';
     }
     return Promise.reject(error);
